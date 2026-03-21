@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+
+{% block title %}Home | FarmGuard AI{% endblock %}
+
+{% load static %}
+{% block footer %}{% endblock %}
+{% block hero %}
+<div class="hero-content container">
+  <h1 class="typewriter">
+    <span id="type-text"></span><span class="cursor">|</span>
+  </h1>
+   <a href="{% url 'deployment' %}" class="btn btn-primary hero-btn">
+    GET STARTED
+  </a>
+</div>
+
+<section class="hero">
+  <video class="bg-video" autoplay muted loop playsinline preload="auto">
+    <source src="{% static 'videos/video1.mp4' %}" type="video/mp4">
+  </video>
+  <div class="overlay"></div>
+</section>
+{% endblock %}

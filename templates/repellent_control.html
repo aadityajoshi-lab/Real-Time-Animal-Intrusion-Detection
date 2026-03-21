@@ -1,0 +1,627 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Repellent Sound Control | FarmGuard AI{% endblock %}
+
+{% block extra_css %}
+<style>
+  .repellent-container {
+    max-width: 1200px;
+    margin: 2rem auto;
+    padding: 2rem;
+  }
+
+  .page-header {
+    text-align: center;
+    margin-bottom: 3rem;
+  }
+
+  .page-header h1 {
+    font-size: 2.5rem;
+    color: #2c5f2d;
+    margin-bottom: 0.5rem;
+  }
+
+  .page-header p {
+    font-size: 1.1rem;
+    color: #666;
+  }
+
+  .sound-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 2rem;
+    margin-bottom: 3rem;
+  }
+
+  .sound-card {
+    background: white;
+    border-radius: 12px;
+    padding: 2rem;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+
+  .sound-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 12px rgba(0,0,0,0.15);
+  }
+
+  .sound-card.playing {
+    border: 3px solid #4CAF50;
+    background: #f0f8f0;
+  }
+
+  .animal-icon {
+    font-size: 3rem;
+    text-align: center;
+    margin-bottom: 1rem;
+  }
+
+  .animal-name {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #2c5f2d;
+    text-align: center;
+    margin-bottom: 0.5rem;
+  }
+
+  .severity-badge {
+    display: inline-block;
+    padding: 0.25rem 0.75rem;
+    border-radius: 20px;
+    font-size: 0.9rem;
+    font-weight: bold;
+    margin: 0 auto 1rem;
+    text-align: center;
+  }
+
+  .severity-high {
+    background: #ff4444;
+    color: white;
+  }
+
+  .severity-medium {
+    background: #ff9800;
+    color: white;
+  }
+
+  .severity-low {
+    background: #4CAF50;
+    color: white;
+  }
+
+  .sound-description {
+    font-size: 0.9rem;
+    color: #666;
+    margin-bottom: 1.5rem;
+    text-align: center;
+    min-height: 60px;
+  }
+
+  .play-btn {
+    width: 100%;
+    padding: 1rem;
+    font-size: 1.1rem;
+    font-weight: bold;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+  }
+
+  .play-btn.primary {
+    background: #4CAF50;
+    color: white;
+  }
+
+  .play-btn.primary:hover {
+    background: #45a049;
+  }
+
+  .play-btn.stop {
+    background: #ff4444;
+    color: white;
+  }
+
+  .play-btn.stop:hover {
+    background: #e63939;
+  }
+
+  .play-btn:disabled {
+    background: #ccc;
+    cursor: not-allowed;
+  }
+
+  .recent-detections {
+    background: white;
+    border-radius: 12px;
+    padding: 2rem;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+  }
+
+  .recent-detections h2 {
+    color: #2c5f2d;
+    margin-bottom: 1.5rem;
+  }
+
+  .detection-item {
+    display: flex;
+    align-items: center;
+    padding: 1rem;
+    border-bottom: 1px solid #eee;
+    gap: 1rem;
+  }
+
+  .detection-item:last-child {
+    border-bottom: none;
+  }
+
+  .detection-image {
+    width: 80px;
+    height: 80px;
+    object-fit: cover;
+    border-radius: 8px;
+    border: 2px solid #ddd;
+  }
+
+  .detection-image-placeholder {
+    width: 80px;
+    height: 80px;
+    background: #f0f0f0;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #999;
+    font-size: 0.8rem;
+  }
+
+  .detection-icon {
+    font-size: 2rem;
+  }
+
+  .detection-info {
+    flex: 1;
+  }
+
+  .detection-name {
+    font-weight: bold;
+    color: #2c5f2d;
+  }
+
+  .detection-time {
+    font-size: 0.9rem;
+    color: #666;
+  }
+
+  .detection-play-btn {
+    padding: 0.5rem 1rem;
+    background: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.9rem;
+  }
+
+  .detection-play-btn:hover {
+    background: #45a049;
+  }
+
+  .no-detections {
+    text-align: center;
+    padding: 2rem;
+    color: #666;
+  }
+
+  .volume-control {
+    margin: 2rem 0;
+    text-align: center;
+  }
+
+  .volume-slider {
+    width: 200px;
+    margin: 0 1rem;
+  }
+
+  .status-indicator {
+    display: inline-block;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    margin-right: 0.5rem;
+  }
+
+  .status-ready {
+    background: #4CAF50;
+  }
+
+  .status-playing {
+    background: #ff9800;
+    animation: pulse 1s infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="repellent-container">
+  <div class="page-header">
+    <h1>🔊 Repellent Sound Control</h1>
+    <p>Play deterrent sounds to scare away dangerous animals from your farm</p>
+  </div>
+
+  <!-- Volume Control -->
+  <div class="volume-control">
+    <label for="volumeSlider">
+      <strong>🔉 Volume:</strong>
+      <input type="range" id="volumeSlider" class="volume-slider" min="0" max="100" value="70">
+      <span id="volumeValue">70%</span>
+    </label>
+  </div>
+
+  <!-- Sound Grid -->
+  <div class="sound-grid">
+    <!-- Elephant -->
+    <div class="sound-card" data-animal="elephant">
+      <div class="animal-icon">🐘</div>
+      <div class="animal-name">Elephant</div>
+      <div style="text-align: center;">
+        <span class="severity-badge severity-high">Severity: 9/10</span>
+      </div>
+      <div class="sound-description">
+        Bee swarm buzzing sounds. Elephants naturally fear bees and will retreat when they hear this sound.
+      </div>
+      <button type="button" class="play-btn primary" data-sound="elephant_bee.mp3">
+        <span class="status-indicator status-ready"></span>
+        <span>▶ Play Bee Sound</span>
+      </button>
+    </div>
+
+    <!-- Tiger -->
+    <div class="sound-card" data-animal="tiger">
+      <div class="animal-icon">🐯</div>
+      <div class="animal-name">Tiger</div>
+      <div style="text-align: center;">
+        <span class="severity-badge severity-high">Severity: 10/10</span>
+      </div>
+      <div class="sound-description">
+        Loud firecracker and explosion sounds. Tigers are startled by sudden loud noises.
+      </div>
+      <button type="button" class="play-btn primary" data-sound="tiger_firecracker.mp3">
+        <span class="status-indicator status-ready"></span>
+        <span>▶ Play Firecracker</span>
+      </button>
+    </div>
+
+    <!-- Bear -->
+    <div class="sound-card" data-animal="bear">
+      <div class="animal-icon">🐻</div>
+      <div class="animal-name">Bear</div>
+      <div style="text-align: center;">
+        <span class="severity-badge severity-high">Severity: 8/10</span>
+      </div>
+      <div class="sound-description">
+        Air horn blast. Bears retreat from loud, sharp sounds that signal danger.
+      </div>
+      <button type="button" class="play-btn primary" data-sound="bear_horn.mp3">
+        <span class="status-indicator status-ready"></span>
+        <span>▶ Play Air Horn</span>
+      </button>
+    </div>
+
+    <!-- Nilgai -->
+    <div class="sound-card" data-animal="nilgai">
+      <div class="animal-icon">🐂</div>
+      <div class="animal-name">Nilgai</div>
+      <div style="text-align: center;">
+        <span class="severity-badge severity-medium">Severity: 6/10</span>
+      </div>
+      <div class="sound-description">
+        Scare sounds designed to frighten nilgai away from crops and fields.
+      </div>
+      <button type="button" class="play-btn primary" data-sound="nilgai_scare.mp3">
+        <span class="status-indicator status-ready"></span>
+        <span>▶ Play Scare Sound</span>
+      </button>
+    </div>
+
+    <!-- Monkey -->
+    <div class="sound-card" data-animal="monkey">
+      <div class="animal-icon">🐵</div>
+      <div class="animal-name">Monkey</div>
+      <div style="text-align: center;">
+        <span class="severity-badge severity-low">Severity: 5/10</span>
+      </div>
+      <div class="sound-description">
+        Langur calls and deterrent sounds. Monkeys avoid areas with predator sounds.
+      </div>
+      <button type="button" class="play-btn primary" data-sound="monkey_scare.mp3">
+        <span class="status-indicator status-ready"></span>
+        <span>▶ Play Deterrent</span>
+      </button>
+    </div>
+
+    <!-- Jackal -->
+    <div class="sound-card" data-animal="jackal">
+      <div class="animal-icon">🐺</div>
+      <div class="animal-name">Jackal</div>
+      <div style="text-align: center;">
+        <span class="severity-badge severity-low">Severity: 5/10</span>
+      </div>
+      <div class="sound-description">
+        Loud scare sounds to frighten jackals away from livestock areas.
+      </div>
+      <button type="button" class="play-btn primary" data-sound="jackal_scare.mp3">
+        <span class="status-indicator status-ready"></span>
+        <span>▶ Play Scare Sound</span>
+      </button>
+    </div>
+
+    <!-- Leopard -->
+    <div class="sound-card" data-animal="leopard">
+      <div class="animal-icon">🐆</div>
+      <div class="animal-name">Leopard</div>
+      <div style="text-align: center;">
+        <span class="severity-badge severity-high">Severity: 9/10</span>
+      </div>
+      <div class="sound-description">
+        Deterrent sounds with loud noises to scare leopards away at night.
+      </div>
+      <button type="button" class="play-btn primary" data-sound="leopard_scare.mp3">
+        <span class="status-indicator status-ready"></span>
+        <span>▶ Play Deterrent</span>
+      </button>
+    </div>
+
+    <!-- Wild Boar -->
+    <div class="sound-card" data-animal="boar">
+      <div class="animal-icon">🐗</div>
+      <div class="animal-name">Wild Boar</div>
+      <div style="text-align: center;">
+        <span class="severity-badge severity-medium">Severity: 7/10</span>
+      </div>
+      <div class="sound-description">
+        Siren sounds to frighten wild boars away from crop fields.
+      </div>
+      <button type="button" class="play-btn primary" data-sound="boar_siren.mp3">
+        <span class="status-indicator status-ready"></span>
+        <span>▶ Play Siren</span>
+      </button>
+    </div>
+
+    <!-- Gaur -->
+    <div class="sound-card" data-animal="gaur">
+      <div class="animal-icon">🐃</div>
+      <div class="animal-name">Gaur</div>
+      <div style="text-align: center;">
+        <span class="severity-badge severity-high">Severity: 8/10</span>
+      </div>
+      <div class="sound-description">
+        Loud scare sounds to frighten gaur (Indian bison) away from farm areas.
+      </div>
+      <button type="button" class="play-btn primary" data-sound="gaur_scare.mp3">
+        <span class="status-indicator status-ready"></span>
+        <span>▶ Play Scare Sound</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Recent Detections -->
+  <div class="recent-detections">
+    <h2>📸 Recent Detections</h2>
+    <div id="detectionsList">
+      <div class="no-detections">
+        <p>No recent detections. The system is monitoring your farm 24/7.</p>
+        <p style="font-size: 0.9rem; color: #999; margin-top: 0.5rem;">Detections will appear here automatically when animals are spotted.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Hidden audio element for playing sounds -->
+<audio id="audioPlayer" preload="none" crossorigin="anonymous"></audio>
+
+<script>
+  const audioPlayer = document.getElementById('audioPlayer');
+  const volumeSlider = document.getElementById('volumeSlider');
+  const volumeValue = document.getElementById('volumeValue');
+  let currentPlayingBtn = null;
+
+  // Set initial volume
+  audioPlayer.volume = 0.7;
+
+  // Volume control
+  volumeSlider.addEventListener('input', (e) => {
+    const volume = e.target.value / 100;
+    audioPlayer.volume = volume;
+    volumeValue.textContent = `${e.target.value}%`;
+  });
+
+  // Play button handlers
+  document.querySelectorAll('.play-btn').forEach(btn => {
+    btn.addEventListener('click', function() {
+      const soundFile = this.dataset.sound;
+      const soundCard = this.closest('.sound-card');
+      const statusIndicator = this.querySelector('.status-indicator');
+      const btnText = this.querySelector('span:last-child');
+
+      if (currentPlayingBtn === this && !audioPlayer.paused) {
+        // Stop playing
+        audioPlayer.pause();
+        audioPlayer.currentTime = 0;
+        this.classList.remove('stop');
+        this.classList.add('primary');
+        btnText.textContent = '▶ Play ' + btnText.textContent.replace('⏸ Stop ', '');
+        soundCard.classList.remove('playing');
+        statusIndicator.classList.remove('status-playing');
+        statusIndicator.classList.add('status-ready');
+        currentPlayingBtn = null;
+      } else {
+        // Stop any currently playing sound
+        if (currentPlayingBtn) {
+          const prevCard = currentPlayingBtn.closest('.sound-card');
+          const prevIndicator = currentPlayingBtn.querySelector('.status-indicator');
+          const prevText = currentPlayingBtn.querySelector('span:last-child');
+          currentPlayingBtn.classList.remove('stop');
+          currentPlayingBtn.classList.add('primary');
+          prevText.textContent = '▶ Play ' + prevText.textContent.replace('⏸ Stop ', '');
+          prevCard.classList.remove('playing');
+          prevIndicator.classList.remove('status-playing');
+          prevIndicator.classList.add('status-ready');
+        }
+
+        // Play new sound
+        const soundUrl = `/api/repellent_sounds/${soundFile}`;
+        console.log('Playing sound:', soundUrl);
+        
+        // Set audio source and play
+        audioPlayer.src = soundUrl;
+        audioPlayer.load(); // Force reload
+        
+        audioPlayer.play().then(() => {
+          this.classList.remove('primary');
+          this.classList.add('stop');
+          const originalText = btnText.textContent.replace('▶ Play ', '');
+          btnText.textContent = '⏸ Stop ' + originalText;
+          soundCard.classList.add('playing');
+          statusIndicator.classList.remove('status-ready');
+          statusIndicator.classList.add('status-playing');
+          currentPlayingBtn = this;
+        }).catch(err => {
+          console.error('Play error:', err);
+          alert('Error playing sound. Please refresh the page and try again.');
+        });
+      }
+    });
+  });
+
+  // Reset button when audio ends
+  audioPlayer.addEventListener('ended', () => {
+    if (currentPlayingBtn) {
+      const soundCard = currentPlayingBtn.closest('.sound-card');
+      const statusIndicator = currentPlayingBtn.querySelector('.status-indicator');
+      const btnText = currentPlayingBtn.querySelector('span:last-child');
+      currentPlayingBtn.classList.remove('stop');
+      currentPlayingBtn.classList.add('primary');
+      btnText.textContent = '▶ Play ' + btnText.textContent.replace('⏸ Stop ', '');
+      soundCard.classList.remove('playing');
+      statusIndicator.classList.remove('status-playing');
+      statusIndicator.classList.add('status-ready');
+      currentPlayingBtn = null;
+    }
+  });
+
+  // Handle audio loading errors without navigation
+  audioPlayer.addEventListener('error', (e) => {
+    console.error('Audio error:', e);
+    if (currentPlayingBtn) {
+      const soundCard = currentPlayingBtn.closest('.sound-card');
+      const statusIndicator = currentPlayingBtn.querySelector('.status-indicator');
+      const btnText = currentPlayingBtn.querySelector('span:last-child');
+      currentPlayingBtn.classList.remove('stop');
+      currentPlayingBtn.classList.add('primary');
+      btnText.textContent = '▶ Play ' + btnText.textContent.replace('⏸ Stop ', '');
+      soundCard.classList.remove('playing');
+      statusIndicator.classList.remove('status-playing');
+      statusIndicator.classList.add('status-ready');
+      currentPlayingBtn = null;
+    }
+    alert('Could not load sound file. Please refresh the page and try again.');
+    e.preventDefault();
+    e.stopPropagation();
+    return false;
+  });
+
+  // Load recent detections
+  function loadRecentDetections() {
+    fetch('/api/history?limit=10')
+      .then(res => res.json())
+      .then(data => {
+        const detectionsList = document.getElementById('detectionsList');
+        
+        if (data.records && data.records.length > 0) {
+          const animalEmojis = {
+            'elephant': '🐘',
+            'tiger': '🐯',
+            'bear': '🐻',
+            'nilgai': '🐂',
+            'monkey': '🐵',
+            'jackal': '🐺',
+            'leopard': '🐆',
+            'wild_boar': '🐗',
+            'gaur': '🐃'
+          };
+
+          const soundFiles = {
+            'elephant': 'elephant_bee.mp3',
+            'tiger': 'tiger_firecracker.mp3',
+            'bear': 'bear_horn.mp3',
+            'nilgai': 'nilgai_scare.mp3',
+            'monkey': 'monkey_scare.mp3',
+            'jackal': 'jackal_scare.mp3',
+            'leopard': 'leopard_scare.mp3',
+            'wild_boar': 'boar_siren.mp3',
+            'gaur': 'gaur_scare.mp3'
+          };
+
+          detectionsList.innerHTML = data.records.map(record => {
+            const emoji = animalEmojis[record.label] || '🔴';
+            const soundFile = soundFiles[record.label];
+            const name = record.label.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase());
+            const time = new Date(record.timestamp * 1000).toLocaleString();
+            const confidence = Math.round(record.confidence * 100);
+            
+            // Build image URL from detection filename
+            const imageUrl = record.image_filename ? `/api/detection_images/${record.image_filename}` : null;
+
+            return `
+              <div class="detection-item">
+                ${imageUrl ? 
+                  `<img src="${imageUrl}" alt="${name}" class="detection-image" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                   <div class="detection-image-placeholder" style="display:none;">No Image</div>` 
+                  : 
+                  `<div class="detection-image-placeholder">No Image</div>`
+                }
+                <div class="detection-icon">${emoji}</div>
+                <div class="detection-info">
+                  <div class="detection-name">${name} (${confidence}% confidence)</div>
+                  <div class="detection-time">${time}</div>
+                </div>
+                ${soundFile ? `<button class="detection-play-btn" onclick="playDetectionSound('${soundFile}')">🔊 Play Sound</button>` : ''}
+              </div>
+            `;
+          }).join('');
+        }
+      })
+      .catch(err => console.error('Error loading detections:', err));
+  }
+
+  // Play sound from detection list
+  function playDetectionSound(soundFile) {
+    const soundUrl = `/api/repellent_sounds/${soundFile}`;
+    audioPlayer.src = soundUrl;
+    audioPlayer.play().catch(err => alert('Error playing sound: ' + err.message));
+  }
+
+  // Load detections on page load
+  loadRecentDetections();
+
+  // Refresh detections every 30 seconds
+  setInterval(loadRecentDetections, 30000);
+
+  // Keep session alive by pinging every 5 minutes
+  setInterval(() => {
+    fetch('/api/latest').catch(() => {});
+  }, 300000);
+</script>
+{% endblock %}

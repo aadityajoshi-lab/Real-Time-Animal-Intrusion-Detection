@@ -1,0 +1,16 @@
+__pycache__
+*.pyc
+*.pyo
+db.sqlite3
+venv/
+.venv/
+*.egg-info
+.git/
+node_modules/
+*.log
+telegram_state.json
+telegram_pending.json
+alert_feedback.json
+detection_history.json
+detections/
+staticfiles/

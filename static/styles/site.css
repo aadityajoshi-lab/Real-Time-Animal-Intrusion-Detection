@@ -1,0 +1,1053 @@
+
+:root{
+  --bg:#ffffff;
+  --text:#000000;
+  --muted:#666;
+  --line:#000000;
+  --card:#fff;
+  --primary:#70c38d00;
+  --radius:10px;
+}
+html { height: 100%; }
+*{box-sizing:border-box}
+body{
+  margin:0;
+    font-family: 'Bower,Georgia,Times New Roman,serif', sans-serif;
+  background:var(--bg);
+  color:var(--text);
+  display: flex;
+    flex-direction: column;
+    margin: 0;
+  min-height: 100vh;   /* ✅ THIS FIXES THE GAP */
+}
+h1, h2, .typewriter{
+  font-family: Bower, Georgia, 'Times New Roman', serif;
+}
+
+.container{
+  width:min(1100px, calc(100% - 30px));
+  margin:0 auto;
+}
+
+.brand{
+  display: flex;
+  align-items: center;
+  text-decoration: none;
+}
+
+.brand-logo{
+  height: 75px;        /* good visual size */
+  width: auto;
+  max-height: 100%;
+  display: block;
+}
+
+/* DON'T make the header full-screen globally */
+header{
+  height: 100px;
+  background:none;
+  background-image:none;
+  background-attachment:initial;
+}
+.navbar{
+  min-height: 80px;     /* gives logo breathing space */
+  padding: 0 20px;
+  display: flex;
+  align-items: center;
+}
+
+/* remove underline always */
+.nav a{
+  text-decoration: none;
+}
+
+/* keep underline off even on hover/focus */
+.nav a:hover,
+.nav a:focus{
+  text-decoration: none;
+}
+/* remove underline from all buttons & links in hero */
+.hero-btn,
+.hero-btn:hover,
+.hero-btn:focus,
+.hero-btn:active{
+  text-decoration: none;
+}
+
+/* remove underline from navbar menu links */
+.site-header .nav a,
+.site-header .nav a:hover,
+.site-header .nav a:focus{
+  text-decoration: none;
+}
+
+
+
+
+
+
+
+
+body.home .main {
+  display: none;   /* ✅ home page pe white gap khatam */
+}
+
+.hero-content{
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;     /* left align */
+  text-align: left;
+
+  max-width: 650px;            /* keeps it tight */
+  margin-left: clamp(16px, 8vw, 110px); /* responsive left offset */
+
+  pointer-events: none;
+}
+.hero-content .hero-btn{ pointer-events:auto; }
+/* hover */
+.hero-btn:hover{
+  transform: translateY(-2px);
+  box-shadow: 0 10px 30px rgba(0,0,0,.25);
+}
+
+/* after scroll (if still visible) */
+body.scrolled .hero-btn{
+  background:#000;
+  color:#fff;
+}
+
+/* typing effect */
+/* Gradient animated text (works great on video) */
+.typewriter #type-text{
+  background: linear-gradient(90deg, #ffffff, #dbeafe, #ffffff);
+  background-size: 200% 200%;
+  -webkit-background-clip: text;
+  background-clip: text;
+    font-family: 'Lato', sans-serif;
+  font-weight: 800;
+  font-size: clamp(28px, 4vw, 56px);
+  line-height: 1.1;
+  letter-spacing: 0.2px;
+  color: transparent;
+}
+.overlay{
+  background: linear-gradient(90deg, rgba(0,0,0,.65), rgba(0,0,0,.20), rgba(0,0,0,.10));
+}
+/* Cursor stays solid white */
+.cursor{
+  font-size: 2em;
+  margin-left: 3px;
+  color: #ffffff;
+  animation: blink 1s infinite;
+}
+
+@keyframes gradientShift{
+  0%   { background-position: 0% 50%; }
+  50%  { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+@media (max-width: 700px){
+  .about-split{
+    grid-template-columns: 1fr;
+  }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* hero (video section) */
+.hero{
+  position:relative;
+  height:100vh;
+  overflow:hidden;
+}
+
+/* video sits normally inside hero */
+.bg-video{
+  position:absolute;
+  inset:0;
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  z-index:0;
+}
+
+/* dark overlay above video */
+.overlay{
+  position:absolute;
+  inset:0;
+  background:rgba(22, 22, 22, 0.164);
+  z-index:1;
+}
+
+
+
+
+
+
+
+
+
+
+
+.header-row{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:20px;
+  padding: 15px 0;
+}
+.link-btn{
+  background:none;
+  border:none;
+  padding:8px 10px;
+  cursor:pointer;
+  color:#333;
+  border-radius:6px;
+}
+.link-btn:hover{background:#eee;}
+
+.brand{
+  font-weight:700;
+  font-size:18px;
+}
+
+.nav{
+  display:flex;
+  gap:10px;
+  align-items:center;
+}
+
+.nav a{
+  padding:8px 10px;
+  border-radius:6px;
+  font-size: 18px;   /* try 14px–16px */
+  font-weight: 500;
+  color:#333;
+}
+
+.nav a:hover{
+  color: #70c38d;
+}
+
+.nav a.active{
+  color:#70c38d;
+}
+
+.nav-sep{
+  width:1px;
+  height:18px;
+  background:var(--line);
+  display:inline-block;
+  margin:0 6px;
+}
+
+.nav-user{
+  font-size:20px;
+  color:var(--muted);
+}
+
+.menu-btn{
+  display:none;
+  border:1px solid var(--line);
+  background:#fff;
+  border-radius:6px;
+  padding:6px 10px;
+  cursor:pointer;
+}
+
+.main{
+  flex: 1;
+  padding: 0;
+}
+
+
+
+
+.page-title{
+  margin:0 0 8px;
+  font-size:26px;
+}
+
+.muted{color:var(--muted);
+justify-self: center;
+}
+.small{font-size:13px}
+
+/* Layout */
+.grid{
+  display:grid;
+  grid-template-columns:repeat(3, 1fr);
+  gap:12px;
+  margin-top:12px;
+}
+
+.card{
+  background:var(--card);
+  border:1px solid var(--line);
+  border-radius:var(--radius);
+  padding:14px;
+}
+
+.row{
+  display:flex;
+  gap:10px;
+  margin-top:10px;
+}
+
+/* Forms */
+label{
+  display:block;
+  margin:10px 0 6px;
+  font-size:13px;
+  color:var(--muted);
+}
+
+.btn{
+  display:inline-block;
+  padding:10px 12px;
+  border-radius:8px;
+  border:1px solid var(--line);
+  background:#fff;
+  cursor:pointer;
+  font-size: 20px;
+  font-weight:400;
+}
+
+.btn:hover{background:#70c38d;color:#ffffff}
+
+.btn-primary{
+  background:var(--primary);
+  color:#70c38d;
+  border-color: #000000;
+}
+.btn-primary:hover{opacity:0.95}
+
+
+
+ul.errorlist{
+  color:#b00020;
+  padding-left:18px;
+}
+
+
+/* Team links */
+.links{
+  display:flex;
+  gap:10px;
+  flex-wrap:wrap;
+  margin-top:8px;
+}
+.links a{
+  font-size:13px;
+  padding:6px 8px;
+  border:1px solid var(--line);
+  border-radius:8px;
+  background:#fff;
+}
+.links a:hover{background:#70c38d}
+
+/* Responsive */
+@media (max-width: 900px){
+  .grid{grid-template-columns:1fr}
+}
+@media (max-width: 780px){
+  .menu-btn{display:block}
+  .nav{
+    display:none;
+    flex-direction:column;
+    align-items:flex-start;
+    background:#fff;
+    border:1px solid var(--line);
+    padding:10px;
+    position:absolute;
+    right:15px;
+    top:56px;
+    border-radius:10px;
+  }
+  .nav.open{display:flex}
+}
+
+
+/* ===== FOOTER (FINAL) ===== */
+.site-footer{
+  background:#0b0b0b;
+  color:#ccc;
+  padding: 30px 0;      /* ✅ missing */
+  margin-top: 80px;     /* ✅ missing */
+}
+
+.footer-container{
+  width: min(1100px, calc(100% - 30px));
+  margin: 0 auto;
+  padding: 0 20px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  flex-wrap:wrap;
+  gap: 12px;
+}
+
+.footer-links{
+  list-style:none;
+  display:flex;
+  gap:20px;
+  margin:0;
+  padding:0;
+}
+
+.footer-links a{
+  color:#ccc;
+  text-decoration:none;
+  font-size:14px;
+}
+
+.footer-links a:hover{
+  color:#fff;
+}
+
+
+/* ================= ABOUT PAGE ================= */
+
+
+/* section spacing like Wildlife Insights */
+.about-section{
+  padding: 60px 0;
+}
+
+.about-head{
+  text-align: center;
+  margin-bottom: 28px;
+}
+
+.about-title{
+  font-size: 42px;
+  margin: 0;
+  font-weight: 800;
+}
+
+.about-underline{
+  width: 22px;
+  height: 3px;
+  background: #70c38d;
+  margin: 10px auto 0;
+  border-radius: 3px;
+}
+
+/* two column layout */
+.about-grid{
+  display:grid;
+  grid-template-columns: 1.1fr 1fr;
+  gap: 36px;
+  align-items: center;
+}
+
+.about-text p{
+  color:#222;
+  line-height: 1.7;
+  font-size: 16px;
+  margin: 0 0 14px;
+}
+
+/* two column layout */
+/* ===== FIX RIGHT TEXT ALIGNMENT ===== */
+
+.about-right{
+  display: flex;
+  flex-direction: column;
+  justify-content: center; /* vertical center relative to image */
+}
+
+.about-right .about-subtitle{
+  margin-top: 0;
+}
+
+.about-right p{
+  max-width: 520px;   /* prevents over-wide text */
+}
+
+.slider{
+    margin-top: 0;
+  position: relative;
+  overflow: hidden;
+
+}
+
+.slides{
+  display: flex;
+
+  transition: transform 0.5s ease-in-out;
+
+
+}
+
+.slides img{
+    margin-top: 120px;     /* space from top */
+display: block;
+  width: 100%;
+  height: 320px;          /* ✅ KEY LINE */
+  object-fit: cover;    /* crop evenly */
+  flex-shrink: 0;
+  border-radius: 16px;
+}
+
+/* ================= SLIDER DOTS ================= */
+
+.slider-dots{
+  position: absolute;
+  bottom: 16px;         /* distance from bottom of image */
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 10px;
+  z-index: 20;          /* above image */
+}
+
+.slider-dots span{
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.6);
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 0 0 2px rgba(0,0,0,0.2); /* visibility on bright images */
+}
+
+.slider-dots span.active{
+  background: #70c38d;   /* FarmGuard green */
+  box-shadow: 0 0 0 2px rgba(0,0,0,0.35);
+  transform: scale(1.25);
+}
+
+
+/* ================= ABOUT VIDEO – NO CROP ================= */
+
+.about-video-wrap{
+  width: 100%;
+    border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 12px 30px rgba(0,0,0,0.15);
+}
+
+/* Let video define its own height */
+.about-video{
+  width: 100%;
+ height: 100%;        /* ✅ KEY LINE */
+  display: block;
+}
+
+
+/* flip layout for What */
+.about-grid--flip{
+  grid-template-columns: 1fr 1.1fr;
+}
+
+/* ================= WHO SECTION ALIGN ================= */
+
+.about-who{
+  text-align: center;
+}
+
+/* grid alignment */
+.who-grid{
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 28px;
+  margin-top: 32px;
+  margin-left: 60px;
+  margin-right: 60px;
+}
+
+/* card styling */
+.who-card{
+  border: 1px solid #e6e6e6;
+  border-radius: 14px;
+  padding: 20px 15px;
+  background: #fff;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;      /* center icon + text */
+  text-align: center;
+}
+
+/* icon */
+.who-icon{
+  font-size: 34px;
+  margin-bottom: 14px;
+}
+
+/* heading */
+.who-card h3{
+  margin: 0 0 10px;
+  font-size: 18px;
+  font-weight: 800;
+}
+
+/* paragraph */
+.who-card p{
+  margin: 0;
+  line-height: 1.6;
+  color: #333;
+  max-width: 260px;         /* keeps text compact */
+}
+
+/* hover (optional but nice) */
+.who-card:hover{
+  transform: translateY(-4px);
+  box-shadow: 0 10px 28px rgba(0,0,0,0.08);
+  transition: all 0.3s ease;
+}
+
+/* responsive */
+@media (max-width: 900px){
+  .who-grid{
+    grid-template-columns: 1fr;
+  }
+}
+
+
+.full-bleed {
+  width: 99.60vw;
+  margin-left: calc(-50vw + 50%);
+  margin-right: calc(-50vw + 50%);
+}
+
+.hero-banner {
+  height: calc(100vh - var(--navbar-height));
+  margin-top: var(--navbar-height); /* only for fixed navbar */
+  position: relative;
+  overflow: hidden;
+  background: #000;
+}
+
+.hero-banner img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+/* Optional overlay */
+.hero-banner::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: rgba(0,0,0,0.25);
+}
+
+.about-subtitle{
+  margin: 18px 0 10px;
+  font-size: 18px;
+  font-weight: 800;
+}
+
+/* ================= WHAT SECTION LAYOUT ================= */
+
+.about-split{
+  display: grid;
+  grid-template-columns: 1.3fr 1fr; /* LEFT bigger */
+  gap: 40px;
+  align-items: flex-start;
+  margin-top: 10px;
+}
+
+.about-left{
+  width: 100%;
+}
+
+
+.about-subtitle{
+  font-size: 18px;
+  font-weight: 800;
+  margin: 18px 0 10px;
+}
+/* common text container */
+.about-text,
+.about-right{
+  max-width: 520px;        /* same readable width */
+  text-align: left;
+}
+
+/* headings */
+.about-text h3,
+.about-right h3,
+.about-subtitle{
+  font-size: 18px;
+  font-weight: 800;
+  margin: 28px 0 10px;     /* space above + below */
+  line-height: 1.3;
+}
+
+/* paragraphs */
+.about-text p,
+.about-right p{
+  margin: 0 0 16px;        /* consistent spacing */
+  line-height: 1.7;
+  color: #222;
+}
+
+/* first heading should not have extra top gap */
+.about-text h3:first-child,
+.about-right h3:first-child{
+  margin-top: 0;
+}
+
+
+/* ================= WHAT BLOCK RESPONSIVE ================= */
+
+/* Desktop already 2 columns via .about-split */
+
+@media (max-width: 900px){
+  .about-split{
+    grid-template-columns: 1fr;  /* stack */
+    gap: 22px;
+  }
+
+  /* slider full width */
+  .about-left{
+    width: 100%;
+  }
+
+  /* make text full width */
+  .about-right{
+    max-width: 100%;
+  }
+
+  /* reduce image height for tablets */
+  .slides img{
+    height: 320px;
+  }
+}
+
+@media (max-width: 600px){
+  /* tighter spacing for phones */
+  .about-section{
+    padding: 36px 0;
+  }
+
+  .about-title{
+    font-size: 32px;
+  }
+
+  /* phone slider height */
+  .slides img{
+    height: 220px;
+  }
+
+  /* dots stay inside */
+  .slider-dots{
+    bottom: 10px;
+    gap: 8px;
+  }
+
+  .slider-dots span{
+    width: 9px;
+    height: 9px;
+  }
+}
+
+
+
+/* ================= TEAM (IMAGE STYLE + HOVER) ================= */
+
+.team-grid{
+  justify-items: center;
+  gap: 48px;
+  margin-top: 40px;
+}
+
+.team-card{
+  background: #f5f5f5;
+  width: 280px;
+  padding: 42px 22px;
+  border-radius: 4px;
+  border:none;
+  text-align: center;
+  transition: all 0.35s ease;
+    position: relative; /* required for absolute centering */
+
+}
+
+/* profile circle */
+.team-img{
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  object-fit: cover;
+  margin-bottom: 18px;
+  filter: grayscale(100%);
+  transition: all 0.35s ease;
+}
+
+/* name */
+.team-card h3{
+  margin: 0 0 6px;
+  font-size: 18px;
+  font-weight: 700;
+}
+
+/* role text */
+.team-card .muted{
+  font-size: 13px;
+  color: #6b8fb0;
+  margin-bottom: 14px;
+}
+
+/* hover */
+.team-card:hover{
+  background: #fff;
+  transform: translateY(-10px);
+  box-shadow: 0 18px 40px rgba(0,0,0,0.12);
+}
+
+.team-card:hover .team-img{
+  filter: grayscale(0%);
+  transform: scale(1.05);
+}
+
+/* icon style */
+.team-grid > .team-card:last-child{
+  grid-column: 2 / 3;
+}
+/* Center icons perfectly under name */
+.team-card .links{
+  left: 50%;
+  top:80%;
+  bottom: 22px;
+  transform: translateX(-50%);
+  position: absolute;}
+
+.team-card .links a{
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: #f0f0f0;
+    display: flex;
+  align-items: center;
+  justify-content: center;
+  align-items: center;
+  color: #333;
+  font-size: 16px;
+  transition: all 0.25s ease;
+}
+
+/* hover icon */
+.team-card .links a:hover{
+  background: #000000;
+  color: #fff;
+}
+/* ================= TEAM PAGE: FINAL MOBILE RESPONSIVE ================= */
+
+/* Desktop default (your current) works.
+   This section only handles mobile/tablet stacking + centering + spacing.
+*/
+
+/* tablets + phones */
+@media (max-width: 900px){
+  /* stack cards */
+  .grid.team-grid{
+    grid-template-columns: 1fr !important;
+    gap: 24px !important;
+    justify-items: center !important;
+  }
+
+  /* remove the desktop "center last card" rule */
+  .grid.team-grid > .card:last-child{
+    grid-column: auto !important;
+  }
+
+  /* card sizing */
+  .team-card{
+    width: min(92vw, 360px) !important;
+    padding: 28px 18px !important;
+  }
+
+  /* profile image */
+  .team-img{
+    width: 110px !important;
+    height: 110px !important;
+    margin-bottom: 14px !important;
+  }
+
+  /* icons: show normally under text (no absolute) */
+  .team-card .links{
+    position: static !important;
+    left: auto !important;
+    bottom: auto !important;
+    transform: none !important;
+
+    opacity: 1 !important;              /* hover doesn't exist on mobile */
+    pointer-events: auto !important;
+
+    margin-top: 14px !important;
+    justify-content: center !important;
+    width: 100% !important;
+  }
+
+  /* icon buttons touch-friendly */
+  .team-card .links a{
+    width: 42px !important;
+    height: 42px !important;
+    font-size: 18px !important;
+  }
+}
+
+/* small phones */
+@media (max-width: 480px){
+  .team-card{
+    width: min(94vw, 340px) !important;
+    padding: 24px 16px !important;
+  }
+
+  .team-img{
+    width: 96px !important;
+    height: 96px !important;
+  }
+
+  .team-card h3{
+    font-size: 17px !important;
+  }
+
+  .team-card .muted{
+    font-size: 12px !important;
+  }
+}
+
+
+
+/*Bower,Georgia,Times New Roman,serif*/
+.page-title{
+  text-align: center;
+  font-size:36px;
+}
+
+/* ===== AUTH (LOGIN / REGISTER) ===== */
+
+.auth{
+  min-height: calc(100vh - 120px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 16px;
+}
+
+/* Card */
+.auth-card{
+  width: 100%;
+  max-width: 420px;
+  padding: 22px 24px;
+  border-radius: 14px;
+  border: 1px solid rgba(0,0,0,0.12);
+  background: #fff;
+  box-shadow: 0 14px 35px rgba(0,0,0,0.08);
+}
+
+/* Page title */
+.auth .page-title{
+  text-align: center;
+  font-size: 34px;
+  margin-bottom: 18px;
+  letter-spacing: -0.02em;
+}
+
+/* Messages */
+.auth .msg{
+  background: #fef3c7;
+  border: 1px solid #fde68a;
+  padding: 10px 12px;
+  border-radius: 10px;
+  font-size: 13px;
+  margin-bottom: 12px;
+}
+
+/* Labels */
+.auth-card label{
+  display: block;
+    font-family: "Inter", system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+  font-size: 16px;
+  font-weight: 500;
+  letter-spacing: 0.01em;
+  margin-bottom: 6px;
+  color: #444;
+}
+
+/* Inputs */
+.auth-card input{
+  width: 100%;
+  height: 44px;
+  border-radius: 10px;
+  border: 1px solid #ccc;
+  padding: 0 12px;
+  margin-bottom: 14px;
+  font-size: 14px;
+  transition: 0.15s ease;
+}
+
+.auth-card input:focus{
+  outline: none;
+  border-color: #22c55e;
+  box-shadow: 0 0 0 3px rgba(34,197,94,0.2);
+}
+
+/* Buttons */
+.auth-card .btn{
+  width: 100%;
+  height: 46px;
+  border-radius: 10px;
+  font-size: 16px;
+  font-weight: 600;
+  margin-top: 6px;
+}
+
+.auth-card .btn-primary{
+  background: #22c55e;
+  border: none;
+  color: #fff;
+}
+
+.auth-card .btn-primary:hover{
+  background: #16a34a;
+}
+
+/* Bottom text */
+.auth-card .muted.small{
+  text-align: center;
+  margin-top: 14px;
+  font-size: 15px;
+  color: #666;
+}
+
+.auth-card .muted.small a{
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.auth-card .muted.small a:hover{
+  text-decoration: none;
+}

@@ -1,0 +1,172 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="icon" type="image/png" sizes="10x10" href="{% static 'images/icon.png' %}">
+  <title>{% block title %}FarmGuard AI{% endblock %}</title>
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700;900&display=swap" rel="stylesheet">
+<link
+  rel="stylesheet"
+  href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+/>
+
+  <link rel="stylesheet" href="{% static 'styles/site.css' %}?v=10001" />
+  {% block extra_css %}{% endblock %}
+</head>
+
+<body>
+  <header class="header">
+    <div class="container header-row">
+      <a href="{% url 'home' %}" class="brand">
+  <img src="{% static 'images/logo.png' %}" alt="FarmGuard AI" class="brand-logo">
+</a>
+      <button class="menu-btn" type="button" aria-label="Menu" data-menu-btn>☰</button>
+
+      <nav class="nav" data-nav>
+        <a class="{% if request.resolver_match.url_name == 'home' %}active{% endif %}" href="{% url 'home' %}">HOME</a>
+        <a class="{% if request.resolver_match.url_name == 'about' %}active{% endif %}" href="{% url 'about' %}">ABOUT</a>
+        <a class="{% if request.resolver_match.url_name == 'deployment' %}active{% endif %}" href="{% url 'deployment' %}">DEPLOYMENT</a>
+        <a class="{% if request.resolver_match.url_name == 'repellent_control' %}active{% endif %}" href="{% url 'repellent_control' %}">REPELLENT CONTROL</a>
+        <a class="{% if request.resolver_match.url_name == 'contact' %}active{% endif %}" href="{% url 'contact' %}">TEAM</a>
+
+        <span class="nav-sep"></span>
+
+        {% if user.is_authenticated %}
+          <span class="nav-user">Hi, {{ user.username }}</span>
+          <form method="post" action="{% url 'logout' %}" style="display:inline;">
+            {% csrf_token %}
+            <button type="submit" class="nav-link" style="background:none;border:none;cursor:pointer;color:inherit;font:inherit;padding:0;">LOGOUT</button>
+          </form>
+
+
+        {% else %}
+          <a class="{% if request.resolver_match.url_name == 'login' %}active{% endif %}" href="{% url 'login' %}">LOGIN</a>
+          <a class="{% if request.resolver_match.url_name == 'register' %}active{% endif %}" href="{% url 'register' %}">SIGN UP</a>
+        {% endif %}
+      </nav>
+    </div>
+  </header>
+      {% block hero %}{% endblock %}
+  <main class="main">
+    <div class="container">
+      {% block content %}{% endblock %}
+    </div>
+  </main>
+
+{% block footer %}
+<footer class="site-footer">
+  <div class="footer-container">
+    <p>© 2026 FarmGuard AI. All Rights Reserved.</p>
+
+    <ul class="footer-links">
+      <li><a href="{% url 'about' %}">About</a></li>
+      <li><a href="{% url 'contact' %}">Contact</a></li>
+      <li><a href="#">Privacy</a></li>
+    </ul>
+  </div>
+</footer>
+{% endblock %}
+
+
+  <script>
+    const btn = document.querySelector("[data-menu-btn]");
+    const nav = document.querySelector("[data-nav]");
+    if (btn && nav) {
+      btn.addEventListener("click", () => nav.classList.toggle("open"));
+    }
+
+
+    (function () {
+  const words = [
+    "When Silence Breaks, AI Watches",
+  "Wildlife Meets Intelligent Defense",
+  "Protecting Farms Before Damage Begins"
+  ];
+
+  const el = document.getElementById("type-text");
+  if (!el) return; // run only on pages that have it
+
+  let wordIndex = 0;
+  let charIndex = 0;
+  let deleting = false;
+
+  const TYPE_SPEED = 90;
+  const DELETE_SPEED = 50;
+  const HOLD_AFTER_TYPE = 1400;
+  const HOLD_AFTER_DELETE = 500;
+
+  function typeLoop() {
+    const word = words[wordIndex];
+
+    if (!deleting) {
+      el.textContent = word.slice(0, charIndex++);
+      if (charIndex > word.length) {
+        setTimeout(() => deleting = true, HOLD_AFTER_TYPE);
+      }
+    } else {
+      el.textContent = word.slice(0, charIndex--);
+      if (charIndex === 0) {
+        deleting = false;
+        wordIndex = (wordIndex + 1) % words.length;
+        setTimeout(() => {}, HOLD_AFTER_DELETE);
+      }
+    }
+
+    setTimeout(typeLoop, deleting ? DELETE_SPEED : TYPE_SPEED);
+  }
+
+  typeLoop();
+})();
+
+
+
+window.addEventListener("DOMContentLoaded", () => {
+  document.querySelectorAll(".slider").forEach(slider => {
+    const slides = slider.querySelector(".slides");
+    const images = slides.querySelectorAll("img");
+    const dotsContainer = slider.querySelector(".slider-dots");
+
+    let index = 0;
+
+    // create dots
+    images.forEach((_, i) => {
+      const dot = document.createElement("span");
+      if (i === 0) dot.classList.add("active");
+      dot.addEventListener("click", () => goToSlide(i));
+      dotsContainer.appendChild(dot);
+    });
+
+    const dots = dotsContainer.querySelectorAll("span");
+
+    function update(){
+      slides.style.transform = `translateX(-${index * 100}%)`;
+      dots.forEach(d => d.classList.remove("active"));
+      dots[index].classList.add("active");
+    }
+
+    function goToSlide(i){
+      index = (i + images.length) % images.length;
+      update();
+    }
+
+    // auto-slide
+    setInterval(() => goToSlide(index + 1), 5000);
+  });
+});
+
+
+
+
+
+
+
+
+  </script>
+  {% block extra_js %}{% endblock %}
+</body>
+</html>

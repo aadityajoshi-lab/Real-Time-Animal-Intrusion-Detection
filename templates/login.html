@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% block title %}Login{% endblock %}
+
+{% block content %}
+<div class="auth">
+  <form method="post" class="card auth-card">
+      <h1 class="page-title">Login</h1>
+
+    {% csrf_token %}
+
+    {% if messages %}
+      {% for m in messages %}
+        <p class="msg">{{ m }}</p>
+      {% endfor %}
+    {% endif %}
+
+    <label>Username</label>
+    <input type="text" name="username" required>
+
+    <label>Password</label>
+    <input type="password" name="password" required>
+
+    <button class="btn btn-primary" type="submit">Login</button>
+
+    <p class="muted small">
+      Don’t have an account? <a href="{% url 'register' %}">Register</a>
+    </p>
+  </form>
+</div>
+{% endblock %}

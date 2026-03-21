@@ -1,0 +1,1234 @@
+{% extends "base.html" %}
+{% block title %}Deployment | FarmGuard AI{% endblock %}
+
+{% block content %}
+
+<style>
+  /* ---------- Page Layout ---------- */
+  .deploy-wrap{
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 28px 16px 40px;
+  }
+  .deploy-hero{
+    display:flex;
+    align-items:flex-end;
+    justify-content:space-between;
+    gap: 16px;
+    margin-bottom: 18px;
+  }
+  .deploy-title{
+    margin:0;
+    font-size: clamp(28px, 3vw, 40px);
+    letter-spacing: -0.02em;
+    line-height: 1.05;
+  }
+  .deploy-sub{
+    margin: 8px 0 0;
+    color: rgba(0,0,0,.65);
+    font-size: 14px;
+  }
+  .hero-right{
+    display:flex;
+    gap:10px;
+    flex-wrap:wrap;
+    align-items:center;
+    justify-content:flex-end;
+  }
+  .pill{
+    border: 1px solid rgba(0,0,0,.12);
+    background: rgba(255,255,255,.75);
+    backdrop-filter: blur(8px);
+    border-radius: 999px;
+    padding: 8px 10px;
+    font-size: 12px;
+    display:flex;
+    align-items:center;
+    gap:8px;
+    white-space:nowrap;
+  }
+  .pill b{ font-weight: 700; }
+  .mini-dot{
+    width: 9px; height: 9px; border-radius: 50%;
+    background: #bdbdbd;
+    box-shadow: 0 0 0 3px rgba(0,0,0,.06);
+  }
+  .mini-dot.ok{ background:#22c55e; box-shadow: 0 0 0 3px rgba(34,197,94,.18); }
+  .mini-dot.warn{ background:#f59e0b; box-shadow: 0 0 0 3px rgba(245,158,11,.18); }
+  .mini-dot.bad{ background:#ef4444; box-shadow: 0 0 0 3px rgba(239,68,68,.18); }
+
+  .deploy-grid{
+    display:grid;
+    grid-template-columns: 1.35fr 0.65fr;
+    gap: 14px;
+  }
+  @media (max-width: 980px){
+    .deploy-grid{ grid-template-columns: 1fr; }
+    .hero-right{ justify-content:flex-start; }
+  }
+
+  /* ---------- Card ---------- */
+  .cardx{
+    border: 1px solid rgba(0,0,0,.10);
+    border-radius: 16px;
+    background: rgba(255,255,255,.82);
+    box-shadow: 0 12px 30px rgba(0,0,0,.06);
+    overflow:hidden;
+  }
+  .cardx-head{
+    padding: 14px 14px 12px;
+    border-bottom: 1px solid rgba(0,0,0,.08);
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap: 12px;
+  }
+  .cardx-head h3{
+    margin:0;
+    font-size: 14px;
+    letter-spacing: .02em;
+    text-transform: uppercase;
+    color: rgba(0,0,0,.60);
+  }
+  .head-actions{
+    display:flex;
+    align-items:center;
+    gap: 10px;
+    flex-wrap:wrap;
+    justify-content:flex-end;
+  }
+  .kv{
+    display:flex;
+    align-items:center;
+    gap:8px;
+    font-size: 12px;
+    color: rgba(0,0,0,.65);
+  }
+  .kv b{ color: rgba(0,0,0,.85); }
+
+  /* ---------- Controls ---------- */
+  .controlsx{
+    padding: 14px;
+    display:grid;
+    grid-template-columns: 1fr auto;
+    gap: 10px;
+    align-items:center;
+  }
+  @media (max-width: 680px){
+    .controlsx{ grid-template-columns: 1fr; }
+  }
+  .input-wrap{
+    display:flex;
+    gap: 10px;
+    align-items:center;
+    flex-wrap:wrap;
+  }
+
+  /* keep your existing input IDs */
+  #sourceInput, #imgUrlInput{
+    width: min(680px, 100%);
+    height: 44px;
+    border-radius: 12px;
+    border: 1px solid rgba(0,0,0,.14);
+    padding: 0 12px;
+    outline: none;
+    background: rgba(255,255,255,.9);
+    transition: .15s ease;
+    font-size: 14px;
+  }
+  #sourceInput:focus, #imgUrlInput:focus{
+    border-color: rgba(34,197,94,.55);
+    box-shadow: 0 0 0 4px rgba(34,197,94,.15);
+  }
+
+  .btnx{
+    height: 40px;
+    border-radius: 12px;
+    padding: 0 14px;
+    border: 1px solid rgba(0,0,0,.14);
+    background: white;
+    cursor:pointer;
+    font-weight: 600;
+    font-size: 13px;
+    transition: .15s ease;
+  }
+  .btnx:hover{ transform: translateY(-1px); }
+  .btnx:disabled{ opacity:.55; cursor:not-allowed; transform:none; }
+
+  .btnx.primary{
+    border-color: rgba(34,197,94,.35);
+    background: linear-gradient(180deg, rgba(34,197,94,.18), rgba(34,197,94,.05));
+  }
+  .btnx.danger{
+    border-color: rgba(239,68,68,.35);
+    background: linear-gradient(180deg, rgba(239,68,68,.18), rgba(239,68,68,.05));
+  }
+  .bg-mode-label{
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 13px;
+    color: #94a3b8;
+    cursor: pointer;
+    padding: 6px 10px;
+    border-radius: 6px;
+    background: rgba(30,41,59,.5);
+    border: 1px solid rgba(71,85,105,.3);
+  }
+  .bg-mode-label:hover{ background: rgba(30,41,59,.8); }
+  .bg-mode-label input{ accent-color: #22c55e; }
+
+  .quick-row{
+    display:flex;
+    gap:8px;
+    flex-wrap:wrap;
+  }
+  .chip{
+    border: 1px dashed rgba(0,0,0,.22);
+    background: rgba(255,255,255,.65);
+    padding: 8px 10px;
+    border-radius: 999px;
+    font-size: 12px;
+    cursor:pointer;
+    user-select:none;
+    transition: .15s ease;
+  }
+  .chip:hover{
+    background: rgba(255,255,255,.95);
+    transform: translateY(-1px);
+  }
+
+  /* ---------- Stream ---------- */
+  .streamx{
+    padding: 12px 14px 14px;
+  }
+  .preview-frame{
+    border-radius: 16px;
+    border: 1px solid rgba(0,0,0,.12);
+    background: radial-gradient(circle at 20% 20%, rgba(34,197,94,.08), transparent 40%),
+                radial-gradient(circle at 80% 0%, rgba(59,130,246,.08), transparent 40%),
+                rgba(0,0,0,.03);
+    overflow:hidden;
+    position: relative;
+    min-height: 440px;
+  }
+  @media (max-width: 980px){
+    .preview-frame{ min-height: 360px; }
+  }
+  #videoEl{
+    width:100%;
+    height:100%;
+    display:block;
+    object-fit: contain;
+    background: transparent;
+    position: relative;
+    z-index: 1;
+  }
+
+  .overlay-bar{
+    position:absolute;
+    left: 12px; top: 12px;
+    z-index: 10;
+    display:flex;
+    gap:8px;
+    flex-wrap:wrap;
+    align-items:center;
+    z-index: 2;
+  }
+  .badge{
+    background: rgba(255,255,255,.75);
+    border: 1px solid rgba(0,0,0,.12);
+    border-radius: 999px;
+    padding: 6px 10px;
+    font-size: 12px;
+    display:flex;
+    align-items:center;
+    gap:8px;
+    backdrop-filter: blur(8px);
+  }
+  .badge strong{ font-weight: 800; }
+  .status-dot{
+    width: 10px; height: 10px; border-radius: 50%;
+    background:#bdbdbd;
+  }
+  .status-dot.running{ background:#22c55e; }
+  .status-dot.image{ background:#3b82f6; }
+  .status-dot.stopped{ background:#bdbdbd; }
+  .status-dot.error{ background:#ef4444; }
+
+  .empty-hint{
+    position:absolute;
+    inset:0;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    text-align:center;
+    padding: 24px;
+    color: rgba(0,0,0,.55);
+    pointer-events:none;
+    z-index: 2;
+  }
+  .empty-hint-inner{
+    max-width: 420px;
+    background: rgba(255,255,255,.7);
+    border: 1px solid rgba(0,0,0,.10);
+    border-radius: 16px;
+    padding: 14px 16px;
+    backdrop-filter: blur(10px);
+  }
+  .empty-hint-inner b{ color: rgba(0,0,0,.80); }
+
+  /* ---------- Detections ---------- */
+  .side-pad{ padding: 14px; }
+  .det-card{
+    display:flex;
+    flex-direction:column;
+    gap: 10px;
+  }
+  .det-headx{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:10px;
+  }
+  .det-headx .title{
+    font-weight: 800;
+    letter-spacing:-0.01em;
+  }
+  .count-pill{
+    font-size: 12px;
+    border-radius: 999px;
+    padding: 6px 10px;
+    border: 1px solid rgba(0,0,0,.12);
+    background: rgba(255,255,255,.8);
+  }
+  #detList{
+    border: 1px solid rgba(0,0,0,.10);
+    border-radius: 14px;
+    background: rgba(255,255,255,.65);
+    min-height: 240px;
+    max-height: 420px;
+    overflow:auto;
+    padding: 10px;
+  }
+  .det-item{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    padding: 10px 10px;
+    border-radius: 12px;
+    border: 1px solid rgba(0,0,0,.06);
+    background: rgba(255,255,255,.82);
+    margin-bottom: 8px;
+  }
+  .det-item:last-child{ margin-bottom:0; }
+  .det-item .label{
+    display:flex;
+    align-items:center;
+    gap:10px;
+  }
+  .tag{
+    font-size: 12px;
+    padding: 4px 8px;
+    border-radius: 999px;
+    border: 1px solid rgba(34,197,94,.30);
+    background: rgba(34,197,94,.10);
+  }
+  .mutedx{ color: rgba(0,0,0,.60); font-size: 12px; }
+
+  /* ---------- Image Test ---------- */
+  .img-card .controlsx{ padding-top: 12px; }
+  .helpbox{
+    border: 1px dashed rgba(0,0,0,.20);
+    border-radius: 14px;
+    background: rgba(255,255,255,.55);
+    padding: 12px;
+    font-size: 12px;
+    color: rgba(0,0,0,.65);
+    line-height: 1.4;
+  }
+  .helpbox code{
+    background: rgba(0,0,0,.06);
+    padding: 2px 6px;
+    border-radius: 8px;
+  }
+
+  /* ---------- Multi-Cam Panel ---------- */
+  .cam-section{ margin-top: 14px; }
+  .cam-add-row{
+    display:flex; gap:8px; flex-wrap:wrap; padding:14px;
+    align-items:center;
+  }
+  .cam-add-row input{
+    flex:1; min-width:180px; height:40px; border-radius:12px;
+    border:1px solid rgba(0,0,0,.14); padding:0 12px;
+    font-size:13px; background:rgba(255,255,255,.9);
+  }
+  .cam-add-row input:focus{
+    border-color:rgba(34,197,94,.55);
+    box-shadow:0 0 0 4px rgba(34,197,94,.15); outline:none;
+  }
+  .cam-grid{
+    display:grid; grid-template-columns:repeat(auto-fill,minmax(300px,1fr));
+    gap:12px; padding:0 14px 14px;
+  }
+  .cam-tile{
+    border:1px solid rgba(0,0,0,.10); border-radius:14px;
+    background:rgba(255,255,255,.7); overflow:hidden;
+    position:relative;
+  }
+  .cam-tile-head{
+    display:flex; justify-content:space-between; align-items:center;
+    padding:10px 12px; border-bottom:1px solid rgba(0,0,0,.06);
+    font-size:12px;
+  }
+  .cam-tile-head b{ font-size:13px; }
+  .cam-tile img{
+    width:100%; height:200px; object-fit:cover;
+    display:block; background:rgba(0,0,0,.04);
+  }
+  .cam-tile-foot{
+    display:flex; justify-content:space-between; align-items:center;
+    padding:8px 12px; font-size:11px; color:rgba(0,0,0,.55);
+  }
+  .cam-dot{
+    width:8px; height:8px; border-radius:50%;
+    display:inline-block; margin-right:6px;
+  }
+  .cam-dot.on{ background:#22c55e; }
+  .cam-dot.off{ background:#bdbdbd; }
+  .cam-remove{
+    background:none; border:none; cursor:pointer;
+    color:rgba(239,68,68,.7); font-size:16px; padding:2px 6px;
+  }
+  .cam-remove:hover{ color:#ef4444; }
+
+  /* ---------- History Gallery ---------- */
+  .history-section{ margin-top:14px; }
+  .history-grid{
+    display:grid; grid-template-columns:repeat(auto-fill,minmax(220px,1fr));
+    gap:12px; padding:0 14px 14px;
+  }
+  .hist-tile{
+    border:1px solid rgba(0,0,0,.10); border-radius:14px;
+    background:rgba(255,255,255,.7); overflow:hidden;
+    transition:.15s ease; cursor:pointer;
+  }
+  .hist-tile:hover{ transform:translateY(-2px); box-shadow:0 8px 20px rgba(0,0,0,.08); }
+  .hist-tile img{
+    width:100%; height:160px; object-fit:cover;
+    display:block; background:rgba(0,0,0,.04);
+  }
+  .hist-tile-info{
+    padding:10px 12px; font-size:12px;
+  }
+  .hist-tile-info b{ font-size:13px; display:block; margin-bottom:2px; }
+  .hist-tile-info .hist-meta{
+    color:rgba(0,0,0,.50); display:flex;
+    justify-content:space-between; margin-top:4px;
+  }
+  .hist-actions{
+    display:flex; justify-content:space-between;
+    align-items:center; padding:0 14px 14px; flex-wrap:wrap; gap:8px;
+  }
+  .hist-empty{
+    padding:30px 14px; text-align:center;
+    color:rgba(0,0,0,.45); font-size:13px;
+  }
+
+  /* ---------- Lightbox ---------- */
+  .lightbox{
+    display:none; position:fixed; inset:0; z-index:9999;
+    background:rgba(0,0,0,.85); align-items:center;
+    justify-content:center; cursor:pointer;
+  }
+  .lightbox.open{ display:flex; }
+  .lightbox img{
+    max-width:90vw; max-height:90vh; border-radius:12px;
+    box-shadow:0 20px 60px rgba(0,0,0,.5);
+  }
+</style>
+
+<div class="deploy-wrap">
+
+  <div class="deploy-hero">
+    <div>
+      <h1 class="deploy-title">Deployment</h1>
+      <p class="deploy-sub">
+        Start detection from a camera or video stream. Alerts will be sent via Telegram.
+      </p>
+    </div>
+
+    <div class="hero-right">
+      <div class="pill">
+        <span class="mini-dot" id="heroDot"></span>
+        <span>Status: <b id="heroStatus">Idle</b></span>
+      </div>
+      <div class="pill">
+        <span>Phone:</span>
+        <b>{{ user_phone }}</b>
+      </div>
+    </div>
+  </div>
+
+  <div class="deploy-grid">
+
+    <!-- LEFT: Stream + Controls -->
+    <div class="cardx">
+      <div class="cardx-head">
+        <h3>Live Detection</h3>
+        <div class="head-actions">
+          <div class="kv"><span class="mutedx">FPS</span> <b id="fpsText">0</b></div>
+          <div class="kv"><span class="mutedx">Source</span> <b id="srcText">—</b></div>
+        </div>
+      </div>
+
+      <div class="controlsx">
+        <div class="input-wrap">
+          <input id="sourceInput" placeholder="camera:0 or video/stream URL (RTSP/HLS/MP4)" />
+          <div class="quick-row">
+            <span class="chip" id="chipCam">camera:0</span>
+            <span class="chip" id="chipHls">HLS demo</span>
+            <span class="chip" id="chipMp4">MP4 demo</span>
+          </div>
+        </div>
+
+        <div class="input-wrap" style="justify-content:flex-end;">
+          <button id="cameraBtn" class="btnx" type="button">Use Camera</button>
+          <button id="startBtn" class="btnx primary" type="button">Start</button>
+          <button id="stopBtn" class="btnx danger" type="button" disabled>Stop</button>
+          <label class="bg-mode-label" title="Detection continues even when you close the browser">
+            <input type="checkbox" id="bgModeCheck" />
+            <span>Background Mode</span>
+          </label>
+        </div>
+      </div>
+
+      <div class="streamx">
+        <div class="preview-frame">
+          <div class="overlay-bar">
+            <div class="badge">
+              <span class="status-dot stopped" id="statusDot"></span>
+              <span id="statusText"><strong>Stopped</strong></span>
+            </div>
+          </div>
+
+          <img id="videoEl" alt="Live Stream" />
+
+          <div class="empty-hint" id="emptyHint">
+            <div class="empty-hint-inner">
+              <b>No preview yet.</b><br/>
+              Paste a stream URL or click <b>Use Camera</b>, then press <b>Start</b>.
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- RIGHT: Detections + Tips -->
+    <div class="cardx">
+      <div class="cardx-head">
+        <h3>Detections</h3>
+        <div class="head-actions">
+          <span class="count-pill">Count: <b id="countText">0</b></span>
+        </div>
+      </div>
+
+      <div class="side-pad det-card">
+        <div class="helpbox">
+          <b>Tips</b><br/>
+          • Camera: <code>camera:0</code><br/>
+          • RTSP: <code>rtsp://user:pass@ip:554/...</code><br/>
+          • HLS: <code>.m3u8</code> links work best for testing.
+        </div>
+
+        <div id="detList">
+          <div class="mutedx">No detections yet.</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Image URL test -->
+  <div class="cardx img-card" style="margin-top:14px;">
+    <div class="cardx-head">
+      <h3>Single Image Test</h3>
+      <div class="head-actions">
+        <span class="mutedx">Drawn result will appear in the preview area</span>
+      </div>
+    </div>
+
+    <div class="controlsx">
+      <div class="input-wrap">
+        <input id="imgUrlInput" placeholder="Direct image URL (.jpg/.png)" />
+      </div>
+      <div class="input-wrap" style="justify-content:flex-end;">
+        <button id="imgDetectBtn" class="btnx primary" type="button">Detect Image</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════ My Streams (Saved & Persistent) ════ -->
+  <div class="cardx cam-section">
+    <div class="cardx-head">
+      <h3>My Streams</h3>
+      <div class="head-actions">
+        <span class="count-pill">Saved: <b id="camCountText">0</b></span>
+      </div>
+    </div>
+    <div class="cam-add-row">
+      <input id="newCamSource" placeholder="Stream URL (RTSP / HLS / MP4 / YouTube)" />
+      <input id="newCamId" placeholder="Stream name" style="max-width:160px;" />
+      <button id="addCamBtn" class="btnx primary" type="button">Save Stream</button>
+    </div>
+    <div class="cam-grid" id="camGrid">
+      <div class="hist-empty" id="camEmpty">No streams saved yet. Add one above.</div>
+    </div>
+  </div>
+
+  <!-- ════ Detection History Gallery ════ -->
+  <div class="cardx history-section">
+    <div class="cardx-head">
+      <h3>Detection History</h3>
+      <div class="head-actions">
+        <span class="count-pill">Total: <b id="histCountText">0</b></span>
+      </div>
+    </div>
+    <div class="hist-actions">
+      <button id="refreshHistBtn" class="btnx" type="button">Refresh</button>
+      <button id="clearHistBtn" class="btnx danger" type="button">Clear All</button>
+    </div>
+    <div class="history-grid" id="histGrid">
+      <div class="hist-empty" id="histEmpty">No detection history yet.</div>
+    </div>
+  </div>
+
+</div>
+
+<!-- Lightbox overlay -->
+<div class="lightbox" id="lightbox">
+  <img id="lightboxImg" src="" alt="Detection" />
+</div>
+
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const API = "/api";
+  const userId = {{ user_id|default:"0" }};
+
+  const startBtn = document.getElementById("startBtn");
+  const stopBtn = document.getElementById("stopBtn");
+  const cameraBtn = document.getElementById("cameraBtn");
+  const sourceInput = document.getElementById("sourceInput");
+  const videoEl = document.getElementById("videoEl");
+  const statusText = document.getElementById("statusText");
+  const fpsText = document.getElementById("fpsText");
+  const srcText = document.getElementById("srcText");
+  const detList = document.getElementById("detList");
+  const countText = document.getElementById("countText");
+  const imgUrlInput = document.getElementById("imgUrlInput");
+  const imgDetectBtn = document.getElementById("imgDetectBtn");
+  const statusDot = document.getElementById("statusDot");
+  const emptyHint = document.getElementById("emptyHint");
+  const heroDot = document.getElementById("heroDot");
+  const heroStatus = document.getElementById("heroStatus");
+  const chipCam = document.getElementById("chipCam");
+  const chipHls = document.getElementById("chipHls");
+  const chipMp4 = document.getElementById("chipMp4");
+
+  let running = false;
+  let rafId = null;
+  let lastFrameId = -1;
+  let modalVideoUrl = null;
+
+  // Add image load event handling
+  videoEl.addEventListener('load', () => {
+    console.log('[VIDEO] MJPEG stream loaded');
+  });
+  videoEl.addEventListener('error', (e) => {
+    console.error('[VIDEO] Image load error:', e);
+    console.error('[VIDEO] Failed src:', videoEl.src);
+  });
+
+  let currentObjectUrl = null;
+  function showBlobPreview(newBlobUrl) {
+    if (currentObjectUrl) URL.revokeObjectURL(currentObjectUrl);
+    currentObjectUrl = newBlobUrl;
+    videoEl.src = currentObjectUrl;
+    if (emptyHint) emptyHint.style.display = "none";
+  }
+
+  function setStatusUI(mode){
+    if (statusDot) statusDot.className = "status-dot " + mode;
+    if (heroDot) heroDot.className = "mini-dot " + (mode === "running" ? "ok" : mode === "image" ? "ok" : mode === "error" ? "bad" : "");
+    if (heroStatus) heroStatus.textContent = mode === "running" ? "Running" : mode === "image" ? "Image" : mode === "error" ? "Error" : "Idle";
+  }
+
+  function setRunningUI(isRunning, source="") {
+    running = isRunning;
+    startBtn.disabled = isRunning;
+    stopBtn.disabled = !isRunning;
+    if (isRunning) {
+      statusText.innerHTML = "<strong>Running</strong>";
+      setStatusUI("running");
+      if (emptyHint) emptyHint.style.display = "none";
+      if (currentObjectUrl) { URL.revokeObjectURL(currentObjectUrl); currentObjectUrl = null; }
+      if (modalVideoUrl) {
+        const url = modalVideoUrl.includes('?') 
+          ? `${modalVideoUrl}&_=${Date.now()}` 
+          : `${modalVideoUrl}?_=${Date.now()}`;
+        console.log('[VIDEO] Setting MJPEG source:', url);
+        videoEl.src = url;
+      } else {
+        const localUrl = API + "/video?ts=" + Date.now();
+        console.log('[VIDEO] Setting local MJPEG source:', localUrl);
+        videoEl.src = localUrl;
+      }
+      lastFrameId = -1;
+      if (!rafId) rafId = requestAnimationFrame(tickLatest);
+      srcText.textContent = source ? source : "\u2014";
+    } else {
+      statusText.innerHTML = "<strong>Stopped</strong>";
+      setStatusUI("stopped");
+      if (currentObjectUrl) { URL.revokeObjectURL(currentObjectUrl); currentObjectUrl = null; }
+      videoEl.removeAttribute("src");
+      videoEl.src = "";
+      modalVideoUrl = null;
+      fpsText.textContent = "0";
+      countText.textContent = "0";
+      detList.innerHTML = '<div class="mutedx">No detections yet.</div>';
+      srcText.textContent = "\u2014";
+      if (emptyHint) emptyHint.style.display = "flex";
+      if (rafId) { cancelAnimationFrame(rafId); rafId = null; }
+    }
+  }
+
+  function renderDetections(dets) {
+    countText.textContent = dets.length;
+    if (!dets.length) { detList.innerHTML = '<div class="mutedx">No detections.</div>'; return; }
+    detList.innerHTML = dets.map(d =>
+      `<div class="det-item">
+         <div class="label"><span class="tag">AI</span><span><b>${esc(d.label)}</b></span></div>
+         <span class="mutedx">${(Number(d.confidence)*100).toFixed(1)}%</span>
+       </div>`
+    ).join("");
+  }
+
+  // Repellent sound system
+  let audioPlayer = null;
+  let lastPlayedSound = null;
+  let soundCooldown = {};
+  const SOUND_COOLDOWN_MS = 30000; // 30 seconds between same sound
+
+  async function playRepellentSound(label) {
+    // Check cooldown
+    const now = Date.now();
+    if (soundCooldown[label] && (now - soundCooldown[label]) < SOUND_COOLDOWN_MS) {
+      console.log(`[REPELLENT] Cooldown active for ${label}`);
+      return;
+    }
+
+    try {
+      // Map animal to sound file
+      const soundMap = {
+        'elephant': 'elephant_bee.mp3',
+        'tiger': 'tiger_firecracker.mp3',
+        'nilgai': 'nilgai_scare.mp3',
+        'monkey': 'monkey_scare.mp3',
+        'bear': 'bear_horn.mp3',
+        'jackal': 'jackal_scare.mp3',
+        'leopard': 'leopard_scare.mp3',
+        'wild_boar': 'boar_siren.mp3',
+        'gaur': 'gaur_scare.mp3'
+      };
+      
+      const soundFile = soundMap[label.toLowerCase()];
+      if (!soundFile) {
+        console.log(`[REPELLENT] No sound configured for ${label}`);
+        return;
+      }
+
+      const soundUrl = `${API}/repellent_sounds/${soundFile}`;
+      console.log(`[REPELLENT] Playing deterrent sound: ${soundUrl}`);
+
+      // Stop previous sound if playing
+      if (audioPlayer) {
+        audioPlayer.pause();
+        audioPlayer = null;
+      }
+
+      // Create new audio player
+      audioPlayer = new Audio(soundUrl);
+      audioPlayer.volume = 1.0; // Max volume for deterrent
+      
+      await audioPlayer.play();
+      soundCooldown[label] = now;
+      
+      console.log(`[REPELLENT] ð Sound playing for ${label}!`);
+      
+      // Show notification
+      if (Notification.permission === "granted") {
+        new Notification(`ð¨ ${label.toUpperCase()} DETECTED!`, {
+          body: `Playing deterrent sound to scare away ${label}`,
+          icon: '/static/images/icon.png'
+        });
+      }
+    } catch (e) {
+      console.error(`[REPELLENT] Failed to play sound:`, e);
+    }
+  }
+
+  // Request notification permission on page load
+  if (Notification.permission === "default") {
+    Notification.requestPermission();
+  }
+
+  // Check if there's an existing running stream on page load
+  async function checkExistingStream() {
+    try {
+      console.log('[INIT] Checking for existing running streams...');
+      
+      // Check Modal background status
+      if (API.includes('modal.run') || '{{ MODAL_STREAM_URL|escapejs }}') {
+        const statusResp = await fetch('https://wildanimaldetection--farmguard-vision-engine-get-all-status.modal.run', {
+          method: 'GET',
+          cache: 'no-store'
+        });
+        const statusData = await statusResp.json();
+        
+        console.log('[INIT] Modal status:', statusData);
+        
+        // Check if any background detection is running
+        if (statusData.backgrounds) {
+          for (const [camId, bgStatus] of Object.entries(statusData.backgrounds)) {
+            if (bgStatus.status === 'running') {
+              console.log(`[INIT] Found running background stream: ${camId}`, bgStatus);
+              
+              // Build the video URL for the background stream
+              const source = bgStatus.source || '';
+              const params = new URLSearchParams({
+                source: source,
+                camera_id: camId,
+                phone: '{{ user_phone|escapejs }}',
+                webhook_url: `${window.location.origin}/api/report_incident`,
+                webhook_secret: '{{ MODAL_WEBHOOK_SECRET|escapejs }}'
+              });
+              modalVideoUrl = `https://wildanimaldetection--farmguard-stream.modal.run?${params.toString()}`;
+              
+              console.log(`[INIT] Resuming background stream with video:`, modalVideoUrl);
+              
+              // Display the video stream
+              setRunningUI(true, source);
+              statusText.innerHTML = "<strong>24/7 Background</strong>";
+              setStatusUI("running");
+              running = true;
+              srcText.textContent = source;
+              startBtn.disabled = true;
+              stopBtn.disabled = false;
+              
+              if (!rafId) rafId = requestAnimationFrame(tickLatest);
+              return; // Found a running stream
+            }
+          }
+        }
+        
+        // Check if any live stream is running
+        if (statusData.streams) {
+          for (const [camId, streamStatus] of Object.entries(statusData.streams)) {
+            if (streamStatus.status === 'running') {
+              console.log(`[INIT] Found running live stream: ${camId}`);
+              // Resume this stream with video
+              sourceInput.value = streamStatus.source || '';
+              
+              // Build the Modal video URL
+              const params = new URLSearchParams({
+                source: streamStatus.source,
+                camera_id: camId,
+                webhook_url: `${window.location.origin}/api/report_incident`,
+                webhook_secret: '{{ MODAL_WEBHOOK_SECRET|escapejs }}'
+              });
+              modalVideoUrl = `https://wildanimaldetection--farmguard-stream.modal.run?${params.toString()}`;
+              
+              setRunningUI(true, streamStatus.source);
+              console.log('[INIT] Resumed existing stream');
+              return;
+            }
+          }
+        }
+      }
+      
+      console.log('[INIT] No existing streams found');
+    } catch (e) {
+      console.error('[INIT] Error checking existing streams:', e);
+    }
+  }
+  
+  // Run on page load
+  checkExistingStream();
+
+  async function tickLatest() {
+    if (!running) return;
+    try {
+      const r = await fetch(API + "/latest", { cache: "no-store" });
+      const data = await r.json();
+      fpsText.textContent = String(data.fps ?? 0);
+      if (typeof data.frame_id === "number" && data.frame_id !== lastFrameId) {
+        lastFrameId = data.frame_id;
+        renderDetections(data.detections || []);
+        
+        // Play repellent sound for dangerous animals
+        if (data.detections && data.detections.length > 0) {
+          const dangerousAnimals = [
+            'elephant','tiger','nilgai','monkey','bear',
+            'jackal','leopard','wild_boar','gaur'
+          ];
+          for (const det of data.detections) {
+            if (dangerousAnimals.includes(det.label.toLowerCase()) && det.confidence >= 0.65) {
+              playRepellentSound(det.label);
+              break; // Play only once per frame
+            }
+          }
+        }
+      }
+    } catch (e) { setStatusUI("error"); }
+    finally { rafId = requestAnimationFrame(tickLatest); }
+  }
+
+  async function apiStopHard() {
+    try { await fetch(API + "/stop_all_modal", { method: "POST", headers:{"Content-Type":"application/json"}, body: JSON.stringify({}) }); } catch(e){}
+    try { await fetch(API + "/stop", { method: "POST", headers:{"Content-Type":"application/json"}, body: JSON.stringify({stop_modal: true}) }); } catch(e){}
+    try { await fetch(API + "/stop_background", { method: "POST", headers:{"Content-Type":"application/json"}, body: JSON.stringify({}) }); } catch(e){}
+    try { await fetch(API + "/clear_modal_flags", { method: "POST", headers:{"Content-Type":"application/json"} }); } catch(e){}
+    videoEl.removeAttribute("src"); videoEl.src = "";
+    if (currentObjectUrl) { URL.revokeObjectURL(currentObjectUrl); currentObjectUrl = null; }
+    running = false;
+    if (rafId) { cancelAnimationFrame(rafId); rafId = null; }
+  }
+
+  const bgModeCheck = document.getElementById("bgModeCheck");
+
+  console.log('[DEBUG] Start button element:', startBtn);
+  console.log('[DEBUG] Stop button element:', stopBtn);
+
+  if (!startBtn || !stopBtn) {
+    console.error('[ERROR] Start/Stop buttons not found in DOM!');
+  }
+
+  startBtn.addEventListener("click", async () => {
+    console.log('[CLICK] Start button clicked!');
+    startBtn.disabled = true; stopBtn.disabled = true;
+    startBtn.textContent = "Starting...";
+    const source = (sourceInput.value || "").trim() || "camera:0";
+    const phone = "{{ user_phone|escapejs }}";
+    const bgMode = bgModeCheck?.checked || false;
+
+    try {
+      await apiStopHard();
+
+      if (bgMode) {
+        console.log('[START] Background mode - starting...');
+        const r = await fetch(API + "/start_background", {
+          method: "POST", headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ source, phone, duration_hours: 24, camera_id: "default" })
+        });
+        const data = await r.json();
+        if (!r.ok || !data.ok) { 
+          alert(data?.error || "Background start failed"); 
+          setStatusUI("error"); 
+          return; 
+        }
+        console.log('[START] Background started successfully:', data);
+        
+        // Show video stream even in background mode
+        if (data.video_url) {
+          modalVideoUrl = data.video_url;
+          console.log('[START] Background video URL:', modalVideoUrl);
+          setRunningUI(true, source);
+        } else {
+          // No video, just show status
+          if (emptyHint) emptyHint.innerHTML = '<div class="empty-hint-inner"><b>Background Mode Active (No Preview)</b><br/>Detection running on GPU.<br/>Alerts will be sent via Telegram.</div>';
+          if (emptyHint) emptyHint.style.display = "flex";
+        }
+        
+        statusText.innerHTML = "<strong>24/7 Background</strong>";
+        setStatusUI("running");
+        srcText.textContent = source;
+        running = true;
+      } else {
+        console.log('[START] Live mode - sending start request...');
+        statusText.innerHTML = "<strong>Connecting to GPU...</strong>";
+        
+        // Add timeout for Modal cold start
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 45000); // 45 second timeout
+        
+        try {
+          const r = await fetch(API + "/start", {
+            method: "POST", 
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ source, phone }),
+            signal: controller.signal
+          });
+          clearTimeout(timeoutId);
+          
+          if (!r.ok) {
+            const data = await r.json();
+            alert(data?.detail || data?.error || ("Start failed: " + r.status)); 
+            setRunningUI(false); 
+            setStatusUI("error"); 
+            return;
+          }
+          
+          const data = await r.json();
+          console.log('[START] Start response:', data);
+          
+          if (data.video_url) {
+            modalVideoUrl = data.video_url;
+            console.log('[START] Modal video URL received:', modalVideoUrl);
+          }
+          
+          setRunningUI(true, data.source || source);
+          console.log('[START] UI updated, stream should be loading...');
+          
+        } catch (fetchError) {
+          clearTimeout(timeoutId);
+          if (fetchError.name === 'AbortError') {
+            alert("GPU startup timed out (45s). Modal might be cold-starting. Please try again.");
+            console.error('[START] Timeout - Modal GPU cold start took too long');
+          } else {
+            throw fetchError;
+          }
+        }
+      }
+    } catch (e) { 
+      console.error('[START] Error:', e);
+      alert("Start failed: " + e.message); 
+      setStatusUI("error"); 
+      setRunningUI(false); 
+    }
+    finally { 
+      startBtn.disabled = false; 
+      startBtn.textContent = "Start";
+      stopBtn.disabled = !running; 
+    }
+  });
+
+  stopBtn.addEventListener("click", async () => {
+    console.log('[CLICK] Stop button clicked!');
+    stopBtn.disabled = true;
+    statusText.innerHTML = "<strong>Stopping...</strong>";
+    
+    try { 
+      await fetch(API + "/stop_all_modal", { 
+        method: "POST", 
+        headers: {"Content-Type": "application/json"}, 
+        body: JSON.stringify({}) 
+      }); 
+    } catch(e) { console.error("stop_all_modal failed:", e); }
+    
+    try { 
+      await fetch(API + "/stop", { 
+        method: "POST", 
+        headers: {"Content-Type": "application/json"}, 
+        body: JSON.stringify({stop_modal: true}) 
+      }); 
+    } catch(e) { console.error("stop failed:", e); }
+    
+    try { 
+      await fetch(API + "/stop_background", { 
+        method: "POST", 
+        headers: {"Content-Type": "application/json"}, 
+        body: JSON.stringify({}) 
+      }); 
+    } catch(e) { console.error("stop_background failed:", e); }
+    
+    videoEl.removeAttribute("src"); 
+    videoEl.src = "";
+    setRunningUI(false); 
+    stopBtn.disabled = false;
+    statusText.innerHTML = "<strong>Stopped</strong>";
+    if (emptyHint) emptyHint.innerHTML = '<div class="empty-hint-inner"><b>No preview yet.</b><br/>Paste a stream URL or click <b>Use Camera</b>, then press <b>Start</b>.</div>';
+  });
+
+  chipCam?.addEventListener("click", () => { sourceInput.value = "camera:0"; sourceInput.focus(); });
+  chipHls?.addEventListener("click", () => { sourceInput.value = "https://elephants.hls.camzonecdn.com/CamzoneStreams/elephants/Playlist.m3u8"; sourceInput.focus(); });
+  chipMp4?.addEventListener("click", () => { sourceInput.value = "https://images.all-free-download.com/footage_preview/mp4/wild_black_bear_catching_fish_on_stream_6892273.mp4"; sourceInput.focus(); });
+
+  imgDetectBtn.addEventListener("click", async () => {
+    const url = (imgUrlInput.value || "").trim();
+    if (!url) return alert("Paste an image URL first.");
+    try {
+      if (running) setRunningUI(false);
+      const r = await fetch(API + "/detect_image_render", { method: "POST", headers:{"Content-Type":"application/json"}, body: JSON.stringify({ url }) });
+      if (!r.ok) throw new Error("Image render failed");
+      const blob = await r.blob();
+      showBlobPreview(URL.createObjectURL(blob));
+      const r2 = await fetch(API + "/detect_image_json", { method:"POST", headers:{"Content-Type":"application/json"}, body: JSON.stringify({ url }) });
+      const data = await r2.json();
+      renderDetections(data.detections || []);
+      statusText.innerHTML = "<strong>Image</strong>"; setStatusUI("image");
+      fpsText.textContent = "-"; srcText.textContent = url;
+    } catch(e) { alert("Image detect failed."); setStatusUI("error"); }
+  });
+
+  function esc(s){ return String(s).replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;"); }
+
+  // ══ Multi-Camera Stream Management ══
+  const camGrid = document.getElementById("camGrid");
+  const camEmpty = document.getElementById("camEmpty");
+  const camCountText = document.getElementById("camCountText");
+  const addCamBtn = document.getElementById("addCamBtn");
+  const newCamSource = document.getElementById("newCamSource");
+  const newCamId = document.getElementById("newCamId");
+
+  async function loadStreams() {
+    try {
+      const r = await fetch(API + "/streams?user_id=" + userId, { cache:"no-store" });
+      const data = await r.json();
+      const list = data.streams || [];
+      camCountText.textContent = list.length;
+      if (!list.length) { camGrid.innerHTML = '<div class="hist-empty">No streams saved yet. Add one above.</div>'; return; }
+      camGrid.innerHTML = list.map(s => `
+        <div class="cam-tile" data-camid="${esc(s.cam_id)}">
+          <div class="cam-tile-head">
+            <span><span class="cam-dot ${s.running||s.is_active?'on':'off'}"></span><b>${esc(s.cam_id)}</b></span>
+            <button class="cam-remove" onclick="removeCam('${esc(s.cam_id)}')" title="Remove">&times;</button>
+          </div>
+          <div style="padding:8px 12px;display:flex;gap:6px;flex-wrap:wrap;">
+            <button class="btnx primary" style="height:32px;font-size:12px;" onclick="selectStream('${esc(s.cam_id)}','${esc(s.source)}')">Select</button>
+            <button class="btnx" style="height:32px;font-size:12px;" onclick="startStream('${esc(s.cam_id)}','${esc(s.source)}')">Start</button>
+            <button class="btnx danger" style="height:32px;font-size:12px;" onclick="stopStream('${esc(s.cam_id)}')">Stop</button>
+          </div>
+          <div class="cam-tile-foot">
+            <span>${esc(s.source).substring(0,50)}</span>
+            <span>${s.running ? (s.fps||0).toFixed?.(1)+' fps' : (s.is_active ? 'background' : 'idle')}</span>
+          </div>
+        </div>
+      `).join("");
+    } catch(e) { console.error("loadStreams error:", e); }
+  }
+
+  function selectStream(camId, source) {
+    sourceInput.value = source;
+    srcText.textContent = source.substring(0, 40);
+    sourceInput.focus();
+  }
+  window.selectStream = selectStream;
+
+  async function startStream(camId, source) {
+    const phone = "{{ user_phone|escapejs }}";
+    try {
+      await fetch(API + "/clear_modal_flags", { method:"POST", headers:{"Content-Type":"application/json"} }).catch(()=>{});
+      const r = await fetch(API + "/start_background", {
+        method:"POST", headers:{"Content-Type":"application/json"},
+        body: JSON.stringify({ source, phone, camera_id: camId, duration_hours: 1 })
+      });
+      const data = await r.json();
+      if (data.ok) { await loadStreams(); }
+      else { alert(data.error || "Failed to start"); }
+    } catch(e) { alert("Failed to start stream."); }
+  }
+  window.startStream = startStream;
+
+  async function stopStream(camId) {
+    try {
+      await fetch(API + "/stop", { method:"POST", headers:{"Content-Type":"application/json"}, body: JSON.stringify({ cam_id: camId, stop_modal: true }) });
+      await fetch(API + "/stop_background", { method:"POST", headers:{"Content-Type":"application/json"}, body: JSON.stringify({ camera_id: camId }) });
+      await loadStreams();
+    } catch(e) { alert("Failed to stop stream."); }
+  }
+  window.stopStream = stopStream;
+
+  addCamBtn.addEventListener("click", async () => {
+    const source = (newCamSource.value || "").trim();
+    if (!source) return alert("Enter a stream URL.");
+    const cam_id = (newCamId.value || "").trim() || ("cam-" + (Date.now() % 10000));
+    const phone = "{{ user_phone|escapejs }}";
+    addCamBtn.disabled = true;
+    try {
+      const r = await fetch(API + "/streams/add", {
+        method:"POST", headers:{"Content-Type":"application/json"},
+        body: JSON.stringify({ source, cam_id, phone, user_id: userId })
+      });
+      const data = await r.json();
+      if (!r.ok) { alert(data?.detail || "Failed to add stream"); return; }
+      newCamSource.value = ""; newCamId.value = "";
+      await loadStreams();
+    } catch(e) { alert("Failed to add stream."); }
+    finally { addCamBtn.disabled = false; }
+  });
+
+  async function removeCam(camId) {
+    if (!confirm("Remove stream " + camId + "?")) return;
+    try {
+      await fetch(API + "/streams/" + encodeURIComponent(camId) + "?user_id=" + userId, { method:"DELETE" });
+      await loadStreams();
+    } catch(e) { alert("Failed to remove stream."); }
+  }
+  window.removeCam = removeCam;
+
+  // ══ Detection History Gallery ══
+  const histGrid = document.getElementById("histGrid");
+  const histEmpty = document.getElementById("histEmpty");
+  const histCountText = document.getElementById("histCountText");
+  const refreshHistBtn = document.getElementById("refreshHistBtn");
+  const clearHistBtn = document.getElementById("clearHistBtn");
+  const lightbox = document.getElementById("lightbox");
+  const lightboxImg = document.getElementById("lightboxImg");
+
+  async function loadHistory() {
+    try {
+      const r = await fetch(API + "/history?limit=50", { cache:"no-store" });
+      const data = await r.json();
+      const records = data.records || [];
+      histCountText.textContent = data.total || 0;
+      if (!records.length) { histGrid.innerHTML = '<div class="hist-empty">No detection history yet.</div>'; return; }
+      histGrid.innerHTML = records.map(rec => {
+        const imgSrc = rec.image ? API + "/detection_images/" + rec.image : "";
+        return `
+        <div class="hist-tile" ${imgSrc ? 'onclick="openLightbox(\''+imgSrc+'\')"' : ''}>
+          ${imgSrc ? '<img src="'+imgSrc+'" alt="'+esc(rec.label)+'" loading="lazy" />' : '<div style="height:160px;background:rgba(0,0,0,.04);display:flex;align-items:center;justify-content:center;color:rgba(0,0,0,.3);font-size:12px;">No image</div>'}
+          <div class="hist-tile-info">
+            <b>${esc(rec.label).replace('_',' ')}</b>
+            <span class="mutedx">${(rec.confidence*100).toFixed(1)}% confidence</span>
+            <div class="hist-meta">
+              <span>${esc(rec.time_str || '')}</span>
+              <span>${esc(rec.camera_id || rec.source || '')}</span>
+            </div>
+          </div>
+        </div>`;
+      }).join("");
+    } catch(e) { console.error("loadHistory error:", e); }
+  }
+
+  refreshHistBtn.addEventListener("click", loadHistory);
+  clearHistBtn.addEventListener("click", async () => {
+    if (!confirm("Delete all detection history?")) return;
+    try { await fetch(API + "/history", { method:"DELETE" }); await loadHistory(); } catch(e){ alert("Failed to clear."); }
+  });
+
+  function openLightbox(src) {
+    lightboxImg.src = src; lightbox.classList.add("open");
+  }
+  window.openLightbox = openLightbox;
+  lightbox.addEventListener("click", () => { lightbox.classList.remove("open"); lightboxImg.src = ""; });
+
+  // ══ Init ══
+  (async () => {
+    try {
+      const r = await fetch(API + "/status", { cache: "no-store" });
+      const data = await r.json();
+      setRunningUI(!!data.running, data.source || "");
+      if (data.running) setStatusUI("running");
+    } catch(e) { setRunningUI(false); }
+    loadStreams();
+    loadHistory();
+  })();
+
+  setInterval(loadStreams, 10000);
+  setInterval(loadHistory, 30000);
+}); // End DOMContentLoaded
+</script>
+
+{% endblock %}

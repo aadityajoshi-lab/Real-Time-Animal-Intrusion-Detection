@@ -1,0 +1,136 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}About | FarmGuard AI{% endblock %}
+
+{% block content %}
+<section class="hero-banner full-bleed">
+    <img src="{% static 'images/Bear.jpg' %}" alt="FarmGuard AI wildlife monitoring">
+</section>
+
+<!-- WHY -->
+<section class="about-section">
+  <div class="about-head">
+    <h2 class="about-title">Why</h2>
+    <div class="about-underline"></div>
+  </div>
+
+  <div class="about-grid">
+    <div class="about-text">
+      <p>
+        Animal detection involves finding wildlife or pets in photos or videos. Traditional computer vision
+        techniques like motion detection often caused false alarms and drained camera batteries. Deep learning
+        has improved accuracy and also added the ability to classify animal species.
+      </p>
+      <p>
+        This is crucial for monitoring specific animals in the wild and alerting people to pests or predators —
+        especially in farms and rural boundaries where fast response prevents damage.
+      </p>
+
+      <h3 class="about-subtitle">The value of detecting animals</h3>
+      <p>
+        False alarms in security and surveillance systems caused by animals are a common issue, especially when
+        relying solely on motion detection. FarmGuard AI reduces false alarms to a minimum and avoids alarm
+        fatigue for operators by detecting animals using deep learning or filtering existing alarms using an
+        animal classifier.
+      </p>
+    </div>
+
+<div class="about-video-wrap">
+  <video
+    class="about-video"
+    autoplay
+    muted
+    loop
+    playsinline
+    preload="metadata">
+    <source src="{% static 'videos/video3.mp4' %}" type="video/mp4">
+  </video>
+</div>
+
+
+  </div>
+</section>
+
+<!-- WHAT -->
+<section class="about-section">
+  <div class="about-head">
+    <h2 class="about-title">What</h2>
+    <div class="about-underline"></div>
+  </div>
+
+  <!-- TWO COLUMN LAYOUT -->
+<div class="about-split">
+    <!-- LEFT: SLIDER -->
+     <div class="slider">
+
+        <div class="slides">
+          <img src="{% static 'images/monkey_0.jpg' %}" alt="Monkey detection">
+          <img src="{% static 'images/leopard.jpg' %}" alt="Leopard detection">
+          <img src="{% static 'images/Canis_aureus_1159.jpg' %}" alt="Jackal detection">
+          <img src="{% static 'images/866.jpg' %}" alt="Gaur detection">
+          <img src="{% static 'images/cctvbearNew_000100.jpg' %}" alt="Gaur detection">
+        </div>
+          <div class="slider-dots"></div>
+
+</div>
+    <!-- RIGHT: TEXT -->
+    <div class="about-right">
+      <h3 class="about-subtitle">Classifying animal species</h3>
+      <p>
+        Animal detectors identify the presence and location of animals in videos and can use another AI model
+        to classify detections into specific species or types. This enables tracking, recording, and census of
+        specific animals while saving battery life and reducing data transfers.
+      </p>
+      <p>
+        Our AI models can be trained to recognize the animals that matter in your region — helping you detect
+        predators, pests, or protected wildlife early.
+      </p>
+
+      <h3 class="about-subtitle">Smart homes and invasive animals</h3>
+      <p>
+        The size of AI models aligns with the chipset and the accuracy vs performance needs of the application.
+        Small models are efficient for low-power devices, while larger models offer higher accuracy and are
+        optimized for powerful GPUs. FarmGuard AI lets you choose what fits your use case best.
+      </p>
+
+      <h3 class="about-subtitle">Object size</h3>
+      <p>
+        Finding smaller individuals becomes increasingly challenging for a detector, but it also enables the
+        use of lower resolution cameras or cheaper lenses. It’s a balancing act — our system helps you find
+        the optimal strategy by allowing you to experiment with different settings and models.
+      </p>
+    </div>
+
+  </div>
+</section>
+</div>
+
+<!-- WHO -->
+<section class="about-section about-who">
+  <div class="about-head">
+    <h2 class="about-title">Who</h2>
+    <div class="about-underline"></div>
+  </div>
+
+  <div class="who-grid">
+    <div class="who-card">
+      <div class="who-icon">🌾</div>
+      <h3>Farmers</h3>
+      <p>Early detection + alerts to reduce crop damage and protect livestock.</p>
+    </div>
+
+    <div class="who-card">
+      <div class="who-icon">🏢</div>
+      <h3>Forest & Park Teams</h3>
+      <p>Monitor farm boundaries and conflict hotspots with reliable detection.</p>
+    </div>
+
+    <div class="who-card">
+      <div class="who-icon">🛰️</div>
+      <h3>Researchers</h3>
+      <p>Species monitoring, tracking, and data insights from detections over time.</p>
+    </div>
+  </div>
+</section>
+{% endblock %}
