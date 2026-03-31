@@ -104,7 +104,7 @@ MIT License
 
 ## Contributors
 
-- Aaditya Joshi
 - Aayush
+- Aaditya
 - Aashrav
 - Bikash
